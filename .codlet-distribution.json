@@ -1,0 +1,11 @@
+{
+    "pluginId":  "codlet-gui",
+    "files":  [
+
+              ],
+    "repository":  "baoabaob/codlet-gui",
+    "schema":  1,
+    "initializing":  true,
+    "kind":  "codlet-generated-distribution",
+    "sourceRepository":  "baoabaob/codlet-plugins"
+}
