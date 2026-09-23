@@ -2,7 +2,7 @@
 
 Official Codlet plugin for graphical plugin and runtime management
 
-Plugin ID: `codlet-gui` · Version: `0.1.0`
+Plugin ID: `codlet-gui` · Version: `0.1.2`
 
 ## Install and update
 
@@ -27,7 +27,11 @@ npm ci --prefix frontend
 node frontend/build.mjs
 ```
 
-Core's runtime SDK is supplied by Codlet. The source revision and exact files are recorded in `.codlet-distribution.json`. Windows x64 Preview is tested; Windows ARM64 and macOS real-client acceptance remain pending.
+Core's runtime SDK is supplied by Codlet. The source revision and exact files are recorded in `.codlet-distribution.json`. Reviewed client profiles and actual native acceptance boundaries are documented in the [development repository's known issues](https://github.com/baoabaob/codlet-plugins/blob/main/docs/known-issues.md).
+
+## License
+
+Original Codlet code is licensed under [Apache-2.0](LICENSE); see [NOTICE](NOTICE). Third-party dependencies retain their own licenses and notices. Independently developed Codlet plugins may choose their own licenses.
 
 ## Remove
 
