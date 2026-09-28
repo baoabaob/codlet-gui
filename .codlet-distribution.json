@@ -4,10 +4,10 @@
   "pluginId": "codlet-gui",
   "repository": "baoabaob/codlet-gui",
   "sourceRepository": "baoabaob/codlet-plugins",
-  "sourceCommit": "1c6d5437293a6b29c79eb880d8ffd119ab0e297f",
-  "version": "0.1.5",
-  "packageSha256": "ad85619b37afdbe1a510ab61e958f4b163aeb93053e1b97e4dd0f4cc3d1f0ac8",
-  "contentDigest": "651e2e9b40ce167d955ebf832f58f00b19dd26f501b9ef90547070de2816ba23",
+  "sourceCommit": "5cd6302e35b8f70f2e2b7cf830d203e73b3c68f3",
+  "version": "0.1.6",
+  "packageSha256": "542c17cc34419b1e9d747ee3890a52e24bb568e0f2887f754e705b0c9976899b",
+  "contentDigest": "f97b9ec5e3ecc783e9cfbdf917eb13a759f658646ce09676ac6254557507b377",
   "files": [
     {
       "path": ".gitattributes",
@@ -42,8 +42,8 @@
     {
       "path": "codlet.json",
       "bytes": 882,
-      "sha256": "5211954b0543c1867750b7dbc8f1c249212d390c6ec9d490b1444c04917a0077",
-      "gitBlob": "42e9f1d96d7d66c0fe46249fc07973284bef866f"
+      "sha256": "6559df2713cc392f04cdef391107d1cc0e96106e3747f76a36b9fd71eb46664f",
+      "gitBlob": "4cadbcaec0fe55ecf58137d06c37480fd214d890"
     },
     {
       "path": "compatibility/official-sources.json",
@@ -59,9 +59,9 @@
     },
     {
       "path": "dist/renderer.js",
-      "bytes": 257926,
-      "sha256": "c24ad4ba61f6d8ee44a8c5f85ebb9c20395abaff94cc5c7ef02f3ddad858069e",
-      "gitBlob": "1fd2dbb6d65c4980e7ef236fb29889cec285d236"
+      "bytes": 258140,
+      "sha256": "ea5115377b5208a4f0987bebe016a793a23bc8335e0093a9990db0f2e8a26242",
+      "gitBlob": "59c80dc1c822331950a83f991e905fe300436290"
     },
     {
       "path": "frontend/build-plugin.mjs",
@@ -113,9 +113,9 @@
     },
     {
       "path": "frontend/src/codlet/layout.css",
-      "bytes": 15679,
-      "sha256": "3c6d096422aca8e7c6b30082b2b2b5f88810e00cc9c1e98ed84e52f741c8477e",
-      "gitBlob": "60bf05cb81922d2293f9280978a3f6ba4a5b1757"
+      "bytes": 15893,
+      "sha256": "b62bc191a8e614612bcb87cd97d92eaf617c3395ac1829770d72c0c0f8074b27",
+      "gitBlob": "0d0fd887f6cf5146f20ae449bc4cfc5e79c4ad63"
     },
     {
       "path": "frontend/src/codlet/marketplace-model.js",
@@ -192,8 +192,8 @@
     {
       "path": "README.md",
       "bytes": 2011,
-      "sha256": "ad5a847e2d4141755f08759ada6870dccae78c4b0367142d6976f3b4adf0d3a4",
-      "gitBlob": "1f4199dd023f56b512661ae582ae20788ddfe8cc"
+      "sha256": "130c39677a20460911d82e7f5f830c220e6fa56c57f49fe24e96c9d18b9bd51b",
+      "gitBlob": "1958a44538c29418ef1c1a4af13a68cc820bd16a"
     }
   ]
 }
