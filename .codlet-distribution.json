@@ -4,10 +4,10 @@
   "pluginId": "codlet-gui",
   "repository": "baoabaob/codlet-gui",
   "sourceRepository": "baoabaob/codlet-plugins",
-  "sourceCommit": "1f3acae15e6d6fb76040d735b39aa6fe663858f1",
-  "version": "0.1.4",
-  "packageSha256": "962c477e0de65c31c7cea18e84343b98716be0c63d6639ba595d9774d408974e",
-  "contentDigest": "424c1bfb3cb931c8db78e27c56f3a712bae6ea2c5cdf6f2363d7b4f7dbbcc62d",
+  "sourceCommit": "1c6d5437293a6b29c79eb880d8ffd119ab0e297f",
+  "version": "0.1.5",
+  "packageSha256": "ad85619b37afdbe1a510ab61e958f4b163aeb93053e1b97e4dd0f4cc3d1f0ac8",
+  "contentDigest": "651e2e9b40ce167d955ebf832f58f00b19dd26f501b9ef90547070de2816ba23",
   "files": [
     {
       "path": ".gitattributes",
@@ -35,15 +35,15 @@
     },
     {
       "path": "codlet-package.json",
-      "bytes": 1497,
-      "sha256": "6fe09475e9cea5fafc42a43a2935b5d173b68226bff0662711f8ce7796943ae8",
-      "gitBlob": "e2af7d25c4cff4d8c796021bdd59912f4e656d9e"
+      "bytes": 1642,
+      "sha256": "491b37a916eaa67ec15c36c4eb990f77c73d5f5fecbc2b47fd23577412dc7d56",
+      "gitBlob": "003d686b6e0162664a582a679b887cdeab29e2dc"
     },
     {
       "path": "codlet.json",
       "bytes": 882,
-      "sha256": "cfe604ccdfd7b7b4527b789b11d72d7d184d1564aa9a060f698ae4301dea2cb2",
-      "gitBlob": "78a31dff6a33a60ea9f580902fc124192de9dddb"
+      "sha256": "5211954b0543c1867750b7dbc8f1c249212d390c6ec9d490b1444c04917a0077",
+      "gitBlob": "42e9f1d96d7d66c0fe46249fc07973284bef866f"
     },
     {
       "path": "compatibility/official-sources.json",
@@ -192,8 +192,8 @@
     {
       "path": "README.md",
       "bytes": 2011,
-      "sha256": "86e041b0273a78ba0a84818c1fa14e53c3d686df006d9cb9e8174c4b0aa93330",
-      "gitBlob": "d8a7385d47c52962b171454b9956e2f81ca90d79"
+      "sha256": "ad5a847e2d4141755f08759ada6870dccae78c4b0367142d6976f3b4adf0d3a4",
+      "gitBlob": "1f4199dd023f56b512661ae582ae20788ddfe8cc"
     }
   ]
 }
