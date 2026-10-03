@@ -2,7 +2,7 @@
 
 Official Codlet plugin for graphical plugin and runtime management
 
-Plugin ID: `codlet-gui` · Version: `0.1.7`
+Plugin ID: `codlet-gui` · Version: `0.1.8`
 
 ## Install and update
 
