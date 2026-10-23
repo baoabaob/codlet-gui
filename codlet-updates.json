@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "kind": "codlet-plugin-updates",
+  "plugins": [
+    {
+      "payload": {
+        "id": "codlet-gui",
+        "version": "1.0.0-rc.5",
+        "repositoryUrl": "https://github.com/baoabaob/codlet-gui",
+        "tag": "v1.0.0-rc.5",
+        "asset": {
+          "name": "codlet-gui-1.0.0-rc.5.zip",
+          "url": "https://github.com/baoabaob/codlet-gui/releases/download/v1.0.0-rc.5/codlet-gui-1.0.0-rc.5.zip",
+          "bytes": 73887,
+          "sha256": "da57e8118b9fd1cf4706d46f4f5565d2e455d13565458bd11f1d7bf37217a9db"
+        }
+      },
+      "publicKey": "Yd7hZ5gs3BiwfnSp2WXO1OChLWjztogC3tzHelrbeaA=",
+      "signature": "QQVszO/Y08VC03HwUoH4qtgXOcx5KROD1tFrYR697McyVSdgQWkhzHwa/u7/IG88EF5pcf2cq7UMUrYpGgSvCA=="
+    }
+  ]
+}
