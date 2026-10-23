@@ -2,7 +2,7 @@
 
 Official Codlet plugin for graphical plugin and runtime management
 
-Plugin ID: `codlet-gui` · Version: `0.1.9`
+Plugin ID: `codlet-gui` · Version: `1.0.0-rc.5`
 
 ## Install and update
 
@@ -10,9 +10,9 @@ In Codlet, choose **Add → Import plugin → GitHub**, then paste:
 
 https://github.com/baoabaob/codlet-gui
 
-Use the plugin ZIP from [Releases](https://github.com/baoabaob/codlet-gui/releases), not GitHub's generated source-code archive. Codlet follows this plugin's declared release channel for verified installer packages and GitHub installations. The first remote update of a preinstalled package asks you to review its adoption; local author folders are never enrolled automatically. Private repositories and draft releases are not available to the current unauthenticated importer.
+Use the plugin ZIP from [Releases](https://github.com/baoabaob/codlet-gui/releases), not GitHub's generated source-code archive. Codlet reads this plugin's signed update manifest and verifies direct-file downloads with the publisher key recorded in the installed package. The first remote update of a preinstalled package asks you to review its adoption; local author folders are never enrolled automatically. Private repositories and draft releases are not available to the current unauthenticated importer.
 
-Dependencies: [codex.ui.adapter](https://github.com/baoabaob/codlet-ui-adapter). Install dependencies first; the current importer does not fetch them automatically.
+Dependencies: Core only. Codlet Core 1 supplies the standard UI/Desktop SDK; separate Adapter installation is not required.
 
 Permissions: `ui.dom`, `runtime.manage`
 
@@ -35,4 +35,4 @@ Original Codlet code is licensed under [Apache-2.0](LICENSE); see [NOTICE](NOTIC
 
 ## Remove
 
-Use the Codlet CLI or GUI. Removing the GUI or its dependency from within that GUI is intentionally protected; use the CLI.
+Uninstall from the Codlet GUI or CLI. Uninstall removes the installed copy and clears configuration, data, cache and credentials. When installing over an existing ID, Update preserves data and Replace starts empty. These installation features require Codlet Core 1.0.0-rc.5 or later.

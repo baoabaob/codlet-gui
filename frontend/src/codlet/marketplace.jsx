@@ -42,22 +42,14 @@ export function createMarketplaceView({React,C,I,manager,t,Copy,Back,PluginTags}
     const date=published&&Number.isFinite(Date.parse(published))?new Intl.DateTimeFormat(manager.state.locale==='zh'?'zh-CN':'en',{year:'numeric',month:'short',day:'numeric'}).format(new Date(published)):t('Date unknown');
     return <><time dateTime={published||undefined}>{t(item.preparedManifest?'Package Release':declared?'Publisher Release':'Release candidate')} · {date}</time><span>{formatDownloads(item.totalDownloads,manager.state.locale)}</span></>;
   }
-  function Compatibility({metadata,device,status,clientStatus,declared=false}){
-    const platforms=Array.isArray(metadata?.platforms)&&metadata.platforms.length?metadata.platforms.map(label).join(', '):t('Unknown (not declared)');
-    const current=device?.platform?label(device.platform):t('Unknown');
-    const verdict=status??device?.status??'unknown';
-    const adapters=metadata?.adapters,profiles=Array.isArray(adapters?.codex?.clientProfiles)?[...new Set(adapters.codex.clientProfiles.map(profile=>profile?.appVersion).filter(value=>typeof value==='string'&&value.length>0))]:[];
-    const builds=Array.isArray(adapters?.codex?.testedBuilds)?adapters.codex.testedBuilds.filter(value=>typeof value==='string'):[],limitations=Array.isArray(adapters?.codex?.limitations)?adapters.codex.limitations.filter(value=>typeof value==='string'):[];
-    return <section className="market-detail-section market-compatibility"><div className="market-compat-heading"><h2>{t('Systems and compatibility')}</h2><span className={verdict==='compatible'?'market-compatible':'market-platform-note market-unknown'}>{t(verdict==='compatible'?(declared?'Author declares this device compatible':'Package declares this device compatible'):verdict==='incompatible'?(declared?'Author declares this device incompatible':'Package declares this device incompatible'):'Compatibility unknown')}</span></div><dl>
-      <dt>{t('Supported systems')}</dt><dd>{platforms}</dd><dt>{t('Current device')}</dt><dd>{current}</dd>
-      <dt>{t('Codex client')}</dt><dd>{clientStatus?.runningVersion||t('Unknown')}</dd>
-      <dt>{t('Adapted client versions')}</dt><dd>{clientStatus?.adaptedVersions?.length?clientStatus.adaptedVersions.join(', '):t('Unknown')}</dd>
-      <dt>{t('Codlet API')}</dt><dd>{metadata?.runtimeApi==null?t('Unknown (not declared)'):`API ${metadata.runtimeApi}`}</dd>
-      {profiles.length>0&&<><dt>{t('Publisher-declared client versions')}</dt><dd>{profiles.join(', ')}</dd></>}
-      {builds.length>0&&<><dt>{t('Author-declared client builds')}</dt><dd>{builds.join(', ')}</dd></>}
-      {limitations.length>0&&<><dt>{t('Author-declared limitations')}</dt><dd>{limitations.join('; ')}</dd></>}
-      {adapters&&typeof adapters==='object'&&!Array.isArray(adapters)&&Object.keys(adapters).length>0&&<><dt>{t('Adapter declarations')}</dt><dd>{Object.keys(adapters).join(', ')}</dd></>}
-    </dl></section>;
+  function Compatibility({metadata,device,status}){
+    const platforms=Array.isArray(metadata?.platforms)?metadata.platforms.filter(value=>typeof value==='string').map(label):[];
+    const unavailable=(status??device?.status)==='incompatible';
+    if(!platforms.length&&!unavailable)return null;
+    return <section className="market-detail-section market-compatibility">
+      {!!platforms.length&&<><h2>{t('Supported systems')}</h2><p className="codlet-copy">{platforms.join(', ')}</p></>}
+      {unavailable&&<p className="codlet-copy" role="status">{t('Not available on this device')}</p>}
+    </section>;
   }
   function Action({item,s}){
     const installed=manager.marketInstalled(item),status=manager.marketKnownCompatibility(item),assets=marketAssets(item);
@@ -85,7 +77,7 @@ export function createMarketplaceView({React,C,I,manager,t,Copy,Back,PluginTags}
             {manifest?<PluginTags tags={declaredTags} show={showTags}/>:<PluginTags tags={topicTags} show={showTags} query={market.query} onSelect={tag=>manager.marketChangeQuery(insertTag(market.query,tag).query)}/>}
           </div>
           {(manifest?.description||item.description)&&<div className="codlet-plugin-description">{manifest?.description||item.description}</div>}
-          <div className="market-meta"><Origin item={item}/><Metrics item={item}/><span className="market-platform-note market-unknown"><I.InfoCircle/>{t(compatibility==='compatible'?(item.preparedManifest?'Package declares this device compatible':'Author declares this device compatible'):compatibility==='incompatible'?(item.preparedManifest?'Package declares this device incompatible':'Author declares this device incompatible'):declared||item.preparedManifest?'Compatibility unknown':'Systems unknown until package review')}</span></div>
+          <div className="market-meta"><Origin item={item}/><Metrics item={item}/>{compatibility==='incompatible'&&<span className="market-platform-note market-unknown"><I.InfoCircle/>{t('Not available on this device')}</span>}</div>
         </div><div className="codlet-plugin-actions"><C.Button color="secondary" variant="ghost" size="sm" aria-label={t(`Details for ${manifest?.name||item.name||item.fullName}`)} onClick={()=>manager.marketDetails(item)}>{t('Details')}</C.Button><Action item={item} s={s}/></div></article>;
       })}</div>}
       {market.hasMore&&<C.Button color="secondary" variant="ghost" size="sm" disabled={market.loading} loading={market.loading} onClick={()=>manager.marketLoadMore()}>{t('Load more')}</C.Button>}
@@ -97,7 +89,7 @@ export function createMarketplaceView({React,C,I,manager,t,Copy,Back,PluginTags}
     const item=s.market.selected;if(!item)return <section className="codlet-page"><Back/></section>;
     const declared=declaredPackageFor(item),manifest=item.preparedManifest??declared?.manifest,installed=manager.marketInstalled(item),metadata=item.preparedMetadata??declared?.metadata??null,assets=marketAssets(item);
     return <section className="codlet-page market-detail"><Back/><div className="market-detail-top"><div className="market-detail-title"><div className="codlet-details-heading"><h2>{manifest?.name||item.name||item.fullName}</h2><span className="codlet-version">{manifest?.version??`${t('Release candidate')} ${item.latestRelease?.tag??''}`}</span>{declared&&!item.preparedManifest&&<span className="market-declared-note">{t('Publisher declared')}</span>}</div>{(manifest?.description||item.description)&&<Copy>{manifest?.description||item.description}</Copy>}<div className="market-meta"><Origin item={item}/><Metrics item={item}/></div></div><Action item={item} s={s}/></div>
-      <Compatibility metadata={metadata} device={s.deviceCompatibility} status={manager.marketKnownCompatibility(item)} clientStatus={s.clientStatus} declared={!!declared&&!item.preparedManifest}/>
+      <Compatibility metadata={metadata} manifest={manifest} device={s.deviceCompatibility} status={manager.marketKnownCompatibility(item)} clientStatus={s.clientStatus} declared={!!declared&&!item.preparedManifest}/>
       {declared&&!item.preparedManifest&&<section className="market-detail-section"><h2>{t('Publisher declaration')}</h2><Copy>{`${declared.manifest.name||declared.manifest.id} · ${declared.manifest.id} · ${declared.manifest.version}`}</Copy><PluginTags tags={declared.manifest.tags} show={s.settings?.effective?.showPluginTags!==false}/><Copy>{t('The actual ZIP is checked before installation.')}</Copy></section>}
       {item.preparedManifest&&<section className="market-detail-section"><h2>{t('Verified package')}</h2><Copy>{`${item.preparedManifest.name||item.preparedManifest.id} · ${item.preparedManifest.id} · ${item.preparedManifest.version}`}</Copy><PluginTags tags={item.preparedManifest.tags} show={s.settings?.effective?.showPluginTags!==false}/>{item.preparedManifest.description&&<Copy>{item.preparedManifest.description}</Copy>}</section>}
       <section className="market-detail-section"><h2>{t('Package and source')}</h2><Copy>{`${item.fullName}\n${t('Release')}: ${item.latestRelease?.tag??t('Unknown')}\n${t('ZIP assets')}: ${assets.length}`}</Copy><Copy>{t('The package ID, permissions, dependencies and compatibility are checked before installation.')}</Copy>{!assets.length&&<Copy>{t('No installable ZIP asset was found in the latest release.')}</Copy>}
