@@ -5,18 +5,18 @@
     {
       "payload": {
         "id": "codlet-gui",
-        "version": "1.0.0-rc.5",
+        "version": "1.0.0-rc.6",
         "repositoryUrl": "https://github.com/baoabaob/codlet-gui",
-        "tag": "v1.0.0-rc.5",
+        "tag": "v1.0.0-rc.6",
         "asset": {
-          "name": "codlet-gui-1.0.0-rc.5.zip",
-          "url": "https://github.com/baoabaob/codlet-gui/releases/download/v1.0.0-rc.5/codlet-gui-1.0.0-rc.5.zip",
-          "bytes": 73887,
-          "sha256": "da57e8118b9fd1cf4706d46f4f5565d2e455d13565458bd11f1d7bf37217a9db"
+          "name": "codlet-gui-1.0.0-rc.6.zip",
+          "url": "https://github.com/baoabaob/codlet-gui/releases/download/v1.0.0-rc.6/codlet-gui-1.0.0-rc.6.zip",
+          "bytes": 75150,
+          "sha256": "5697044200a0a233a3ea54a91b2fd269de5813f9bf6aff7bd6731f10d841b49b"
         }
       },
       "publicKey": "Yd7hZ5gs3BiwfnSp2WXO1OChLWjztogC3tzHelrbeaA=",
-      "signature": "QQVszO/Y08VC03HwUoH4qtgXOcx5KROD1tFrYR697McyVSdgQWkhzHwa/u7/IG88EF5pcf2cq7UMUrYpGgSvCA=="
+      "signature": "UBniVkMwF+GWQOUXmDUrVJE+t8f63rABLAHzrnKsF2LezoPpV+IHJdUKVj/uyrPK00qeT6vYCuiwKh5sc+VEBA=="
     }
   ]
 }
