@@ -38,17 +38,33 @@ function PluginTags({tags,show=true,query,onSelect}) {
   const selected=new Set((query??'').toLowerCase().split(/\s/u));
   return <span className="codlet-plugin-tags">{tags.map(tag=>onSelect?<button type="button" className="codlet-plugin-tag" key={tag} aria-label={`#${tag}`} aria-pressed={selected.has(`#${tag.toLowerCase()}`)} onClick={()=>onSelect(tag)}><TagHash/>{tag}</button>:<span className="codlet-plugin-tag" key={tag}><TagHash/>{tag}</span>)}</span>;
 }
+function ErrorDetails({summary,children,error=true}){
+  return <div className="codlet-plugin-issue" role={error?'alert':'status'}><details><summary className={error?'codlet-error':undefined}>{t(summary)}</summary><Copy error={error}>{children}</Copy></details></div>;
+}
+function PluginFeedback({plugin}){
+  const status=manager.pluginRuntimeStatus(plugin),issues=manager.pluginRuntimeIssues(plugin),actions=manager.pluginActionIssues(plugin),updateError=manager.pluginUpdateError(plugin),install=manager.installState(plugin);
+  const failed=['Enabled, not running','Plugin failed to run','Plugin validation failed','Temporarily disabled'].includes(status),installVisible=install&&install.phase!=='upToDate',truncated=plugin.renderer?.diagnosticsTruncated===true;
+  if(!status&&!issues.length&&!actions.length&&!updateError&&!installVisible&&!truncated)return null;
+  return <div className="codlet-plugin-feedback">
+    {status&&<Copy error={failed} role="status">{t(status)}</Copy>}
+    {(issues.length>0||truncated)&&<ErrorDetails summary={failed?'Error details':issues.length?'Plugin reported an error':'Plugin diagnostics'} error={issues.length>0}>{[...issues.map(error=>t(error)),truncated?t('Some plugin diagnostics are not shown.'):''].filter(Boolean).join('\n')}</ErrorDetails>}
+    {actions.map(issue=><ErrorDetails summary={issue.summary} key={issue.source}>{t(issue.message)}</ErrorDetails>)}
+    {updateError&&<ErrorDetails summary="Update check failed">{[
+      t(updateError.error),
+      updateError.checkedAt?t(`Last successful check: ${new Date(updateError.checkedAt).toLocaleString(manager.state.locale)}`):'',
+      updateError.nextCheckAt?t(`Next check after: ${new Date(updateError.nextCheckAt).toLocaleString(manager.state.locale)}`):'',
+    ].filter(Boolean).join('\n')}</ErrorDetails>}
+    {installVisible&&(install.phase==='failed'?<ErrorDetails summary="Update failed">{t(install.message||'Update failed')}</ErrorDetails>:<Copy role="status">{t(({queued:'Waiting to update',downloading:'Downloading update',installing:'Installing update',checkingStatus:'Checking installation status',updated:'Updated',reviewRequired:'Needs review'})[install.phase])}{install.message?` · ${t(install.message)}`:''}</Copy>)}
+  </div>;
+}
 function PluginRow({plugin,s,showTags,onSelectTag}) {
   const busy=mutationBusy(s)||s.loading||s.listStale, enabled=plugin.enabled===true, registered=plugin.registered!==false;
-  const error=plugin.temporarilyDisabled?(plugin.reloadAvailable?'Temporarily disabled. Update or reload its provider to retry. Enabled preferences and grants are preserved.':'Temporarily disabled for this launch. Update the adapter and restart Codlet to retry. Enabled preferences and grants are preserved.'):plugin.execution?.error || plugin.validation?.error?.message,update=manager.pluginUpdate(plugin),install=manager.installState(plugin);
+  const update=manager.pluginUpdate(plugin),install=manager.installState(plugin);
   return <div className="codlet-plugin-row" data-codlet-plugin={plugin.id} aria-busy={manager.pending?.pluginId===plugin.id}>
     <div className="codlet-plugin-copy">
       <div className="codlet-plugin-title"><span className="codlet-plugin-name">{name(plugin)}</span><span className="codlet-version">{plugin.version}</span><PluginTags tags={plugin.tags} show={showTags} query={s.query} onSelect={onSelectTag}/>{registered&&update?.status==='available'&&<C.Button color="info" variant="soft" size="xs" disabled={busy||manager.checkingPlugins()} aria-label={t(`Update ${name(plugin)}`)} onClick={()=>manager.updatePlugins([plugin])}><I.Download/>{t('Update')}</C.Button>}</div>
       {description(plugin)&&<div className="codlet-plugin-description">{description(plugin)}</div>}
-      {!registered&&plugin.loaded&&<Copy>{t('Registration removed; still loaded')}</Copy>}
-      {plugin.validation?.status==='not_loaded'&&<Copy>{t('Registered, not loaded')}</Copy>}
-      {error&&<Copy error>{t(error)}</Copy>}
-      {install&&install.phase!=='upToDate'&&<Copy error={install.phase==='failed'} role="status">{t(({queued:'Waiting to update',downloading:'Downloading update',installing:'Installing update',checkingStatus:'Checking installation status',updated:'Updated',reviewRequired:'Needs review',failed:'Update failed'})[install.phase])}{install.message?` · ${t(install.message)}`:''}</Copy>}
+      <PluginFeedback plugin={plugin}/>
       {install?.phase==='reviewRequired'&&<C.Button color="secondary" variant="soft" size="sm" disabled={busy} onClick={()=>manager.reviewPluginUpdate(plugin)}>{t('Review update')}</C.Button>}
       {install?.phase==='failed'&&<C.Button color="secondary" variant="ghost" size="sm" disabled={busy} onClick={()=>manager.importPage('github',plugin)}>{t('Choose a version manually')}</C.Button>}
     </div>
@@ -105,11 +121,7 @@ function PluginList({s}) {
       </div>
     </div>
     {checkMessage&&<p className="codlet-update-status codlet-copy" role="status">{t(checkMessage)}</p>}
-    {manager.pluginUpdateErrors().map(item=><Copy error role="alert" key={item.id}>{[
-      `${item.name}: ${t(item.error)}`,
-      item.checkedAt?t(`Last successful check: ${new Date(item.checkedAt).toLocaleString(s.locale)}`):'',
-      item.nextCheckAt?t(`Next check after: ${new Date(item.nextCheckAt).toLocaleString(s.locale)}`):'',
-    ].filter(Boolean).join(' · ')}</Copy>)}
+    {manager.orphanedPluginErrors().map(item=><ErrorDetails summary={`${item.name}: ${t('Plugin operation failed')}`} key={item.id}>{t(item.error)}</ErrorDetails>)}
     {[...new Set([s.pluginUpdateError,s.pluginUpdates?.error].filter(Boolean))].map(error=><Copy error role="alert" key={error}>{t(error)}</Copy>)}
     {s.error&&<p className="codlet-status codlet-error" role="alert">{t(s.error)}</p>}
     {s.pluginInstallError&&<Copy error role="alert">{t(s.pluginInstallError)}</Copy>}
@@ -197,9 +209,11 @@ function Details({s}){
   const p=s.details;
   return <section className="codlet-page"><Back/>
     {s.detailsError&&<Copy error role="alert">{t(s.detailsError)}</Copy>}
+    {s.listError&&<Copy error role="alert">{t(s.listError)}</Copy>}
     {s.detailsBusy?<Copy role="status">{t('Loading permissions...')}</Copy>:p&&<>
       <div className="codlet-details-identity"><div className="codlet-details-heading"><h2>{name(p)}</h2>{p.version&&<span className="codlet-version">{p.version}</span>}{p.source!=='bundled'&&<IconAction icon={I.FolderOpen} label="Open plugin folder" onClick={()=>manager.openFolder()}/>}</div>
         <Copy>{p.id}</Copy>{description(p)&&<Copy>{description(p)}</Copy>}</div>
+      <PluginFeedback plugin={s.plugins.find(plugin=>plugin.id===p.id)??p}/>
       {p.ownership==='core-managed-github'&&<Source source={p.managedSource} metadata={p.metadata}/>}
       {p.updateSource&&p.ownership!=='core-managed-github'&&<Copy>{t('Installer update channel')}{': '}{p.updateSource.repositoryUrl}</Copy>}
       <Compatibility metadata={p.metadata} device={p.deviceCompatibility??s.deviceCompatibility} clientStatus={s.clientStatus}/>
@@ -309,19 +323,25 @@ export function saveState(){return manager?.saveViewState()??{schema:1,value:{op
 export async function restoreState(snapshot){if(!manager)throw Error('Codlet GUI is not active');const wasOpen=manager.restoreViewState(snapshot);if(wasOpen)await manager.open(document.visibilityState!=='hidden');}
 export async function activate(context){
     deactivate();const current=epoch;context.onDeactivate(deactivate);
+    const failed=error=>{if(current===epoch){try{ui?.dispose();}finally{manager?.dispose();manager=null;releaseView();}context.reportDiagnostic?.({code:'gui_ui_unavailable',message:String(error?.message??error)});}};
     try{
       if(context.codex?.api!==1||context.ui?.api!==2)throw new Error('Update Codlet for the Core Codex SDK');
       manager=new Manager(context);
       const owned=manager;
+      const live=()=>current===epoch&&manager===owned&&owned.alive;
       const options={label:'Codlet',icon:'Codlet',toolbar:false,render:({ui:activeUI})=>{
+        if(!live())return null;
         ui=activeUI??ui;({React,components:C,icons:I}=ui);h=React.createElement;I={...createCodletIcons(React,I),NativeDownload:I.Download};
         Settings=createSettingsView({React,C,I,manager,t,Copy,mutationBusy});CodletIcon=createCodletIcon(React);ProjectLinks=createProjectLinks({React,C,I,t});
         ({UpdateNotice,CombinedUpdateDialog}=createUpdatesView({React,C,I,manager,t,Copy,mutationBusy}));
         PermissionSummary=createPermissionSummary({React,C,I,t});
         ({Marketplace,MarketplaceDetails,Compatibility}=createMarketplaceView({React,C,I,manager,t,Copy,Back,PluginTags}));
         return <App/>;
-      },onActivate:()=>owned.open(document.visibilityState!=='hidden'),onDeactivate:()=>{owned.close();if(context.ui.page)releaseView();}};
+      },onActivate:()=>{if(live())return owned.open(document.visibilityState!=='hidden');},onDeactivate:()=>{if(live()){owned.close();if(context.ui.page)releaseView();}}};
       const page=await context.codex.navigation.page(options);
-      if(current===epoch&&page.path)owned.trackUpdates(page,document);
-    }catch(error){if(current===epoch){try{ui?.dispose();}finally{manager?.dispose();manager=null;releaseView();}context.reportDiagnostic?.({code:'gui_ui_unavailable',message:String(error?.message??error)});}}
+      if(!live())return;
+      const ready=page.ready;
+      if(ready===undefined){if(live()&&page.path)owned.trackUpdates(page,document);}
+      else void ready.then(registration=>{if(live()&&registration.available===true)owned.trackUpdates(page,document);},()=>{}).catch(failed);
+    }catch(error){failed(error);}
 }
